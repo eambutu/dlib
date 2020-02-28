@@ -216,7 +216,7 @@ int main(int argc, char** argv)
 
         if (parser.option("h"))
         {
-            cout << "Usage: train_object_detector [options] <image dataset file|image file>\n";
+            cout << "Usage: train_object_detector [options] <image dataset file|image file> <output file>\n";
             parser.print_options(); 
                                        
             return EXIT_SUCCESS;
@@ -229,7 +229,7 @@ int main(int argc, char** argv)
 
         if (parser.option("t") || parser.option("cross-validate"))
         {
-            if (parser.number_of_arguments() != 1)
+            if (parser.number_of_arguments() != 2)
             {
                 cout << "You must give an image dataset metadata XML file produced by the imglab tool." << endl;
                 cout << "\nTry the -h option for more information." << endl;
@@ -285,19 +285,22 @@ int main(int argc, char** argv)
             if (parser.option("flip"))
                 add_image_left_right_flips(images, object_locations, ignore);
 
+            cout << "Starting to train" << endl;
             if (parser.option("t"))
             {
+                cout << "Training saving to disk..." << endl;
                 // Do the actual training and save the results into the detector object.  
                 object_detector<image_scanner_type> detector = trainer.train(images, object_locations, ignore);
 
-                cout << "Saving trained detector to object_detector.svm" << endl;
-                serialize("object_detector.svm") << detector;
+                cout << "Saving trained detector to " << parser[1] << endl;
+                serialize(parser[1]) << detector;
 
                 cout << "Testing detector on training data..." << endl;
                 cout << "Test detector (precision,recall,AP): " << test_object_detection_function(detector, images, object_locations, ignore) << endl;
             }
             else
             {
+                cout << "Training without saving to disk" << endl;
                 // shuffle the order of the training images
                 randomize_samples(images, object_locations);
 
