@@ -21,7 +21,7 @@ args = vars(ap.parse_args())
 # initialize dlib's face detector (HOG-based) and then load our
 # trained shape predictor
 print("[INFO] loading facial landmark predictor...")
-# detector = dlib.simple_object_detector("lower_half_detector_u2_py.svm")
+detector = dlib.simple_object_detector(args["detector"])
 predictor = dlib.shape_predictor(args["shape_predictor"])
 
 # initialize the video stream and allow the cammera sensor to warmup
@@ -38,30 +38,30 @@ while True:
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     # detect faces in the grayscale frame
-    # rects = detector(gray, 0)
+    rects = detector(gray, 0)
 
     # loop over the face detections
-    # for rect in rects:
-    # convert the dlib rectangle into an OpenCV bounding box and
-    # draw a bounding box surrounding the face
-    # (x, y, w, h) = face_utils.rect_to_bb(rect)
-    h = 200
-    x = 17
-    y = 89
-    w = 326
-    rect = dlib.rectangle(x, y, x + w, y + h)
-    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+    for rect in rects:
+        # convert the dlib rectangle into an OpenCV bounding box and
+        # draw a bounding box surrounding the face
+        (x, y, w, h) = face_utils.rect_to_bb(rect)
+        # h = 200
+        # x = 17
+        # y = 89
+        # w = 326
+        # rect = dlib.rectangle(x, y, x + w, y + h)
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-    # use our custom dlib shape predictor to predict the location
-    # of our landmark coordinates, then convert the prediction to
-    # an easily parsable NumPy array
-    shape = predictor(gray, rect)
-    shape = face_utils.shape_to_np(shape)
+        # use our custom dlib shape predictor to predict the location
+        # of our landmark coordinates, then convert the prediction to
+        # an easily parsable NumPy array
+        shape = predictor(gray, rect)
+        shape = face_utils.shape_to_np(shape)
 
-    # loop over the (x, y)-coordinates from our dlib shape
-    # predictor model draw them on the image
-    for (sX, sY) in shape:
-    	cv2.circle(frame, (sX, sY), 3, (0, 0, 255), -1)
+        # loop over the (x, y)-coordinates from our dlib shape
+        # predictor model draw them on the image
+        for (sX, sY) in shape:
+            cv2.circle(frame, (sX, sY), 3, (0, 0, 255), -1)
 
     # show the frame
     cv2.imshow("Frame", frame)
