@@ -47,16 +47,17 @@ int main(int argc, char** argv)
         // thing we do is load that dataset.  This means you need to supply the
         // path to this faces folder as a command line argument so we will know
         // where it is.
-        if (argc != 2)
+        if (argc != 5)
         {
-            cout << "Give the path to the examples/faces directory as the argument to this" << endl;
-            cout << "program.  For example, if you are in the examples folder then execute " << endl;
-            cout << "this program by running: " << endl;
-            cout << "   ./train_shape_predictor_ex faces" << endl;
+            cout << "Give the base path, training xml, testing xml, and output file" << endl;
             cout << endl;
             return 0;
         }
         const std::string faces_directory = argv[1];
+        const std::string train_xml = argv[2];
+        const std::string test_xml = argv[3];
+        const std::string output_file = argv[4];
+
         // The faces directory contains a training dataset and a separate
         // testing dataset.  The training data consists of 4 images, each
         // annotated with rectangles that bound each human face along with 68
@@ -88,8 +89,8 @@ int main(int argc, char** argv)
         // tool which can be found in the tools/imglab folder.  It is a simple
         // graphical tool for labeling objects in images.  To see how to use it
         // read the tools/imglab/README.txt file.
-        load_image_dataset(images_train, faces_train, faces_directory+"/training_with_face_landmarks.xml");
-        load_image_dataset(images_test, faces_test, faces_directory+"/testing_with_face_landmarks.xml");
+        load_image_dataset(images_train, faces_train, faces_directory + "/" + train_xml);
+        load_image_dataset(images_test, faces_test, faces_directory + "/" + test_xml);
 
         // Now make the object responsible for training the model.  
         shape_predictor_trainer trainer;
@@ -128,7 +129,7 @@ int main(int argc, char** argv)
         // distances by the interocular distance, as is customary when
         // evaluating face landmarking systems.
         cout << "mean training error: "<< 
-            test_shape_predictor(sp, images_train, faces_train, get_interocular_distances(faces_train)) << endl;
+            test_shape_predictor(sp, images_train, faces_train) << endl;
 
         // The real test is to see how well it does on data it wasn't trained
         // on.  We trained it on a very small dataset so the accuracy is not
@@ -136,10 +137,10 @@ int main(int argc, char** argv)
         // train it on one of the large face landmarking datasets you will
         // obtain state-of-the-art results, as shown in the Kazemi paper.
         cout << "mean testing error:  "<< 
-            test_shape_predictor(sp, images_test, faces_test, get_interocular_distances(faces_test)) << endl;
+            test_shape_predictor(sp, images_test, faces_test) << endl;
 
         // Finally, we save the model to disk so we can use it later.
-        serialize("sp.dat") << sp;
+        serialize(output_file) << sp;
     }
     catch (exception& e)
     {
