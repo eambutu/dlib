@@ -23,12 +23,16 @@ inline std::vector<image_window::overlay_line> custom_render_face_detections (
 
             const full_object_detection& d = dets[i];
 
-            for (unsigned long i = 1; i <= 7; ++i)
-                lines.push_back(image_window::overlay_line(d.part(i), d.part(i - 1), color));
-            lines.push_back(image_window::overlay_line(d.part(0), d.part(7), color));
-
-            lines.push_back(image_window::overlay_line(d.part(8), d.part(9), color));
+            lines.push_back(image_window::overlay_line(d.part(0), d.part(1), color));
+            lines.push_back(image_window::overlay_line(d.part(1), d.part(3), color));
+            lines.push_back(image_window::overlay_line(d.part(3), d.part(4), color));
+            lines.push_back(image_window::overlay_line(d.part(4), d.part(5), color));
+            lines.push_back(image_window::overlay_line(d.part(5), d.part(6), color));
+            lines.push_back(image_window::overlay_line(d.part(6), d.part(7), color));
+            lines.push_back(image_window::overlay_line(d.part(7), d.part(8), color));
+            lines.push_back(image_window::overlay_line(d.part(8), d.part(0), color));
             lines.push_back(image_window::overlay_line(d.part(9), d.part(10), color));
+            lines.push_back(image_window::overlay_line(d.part(10), d.part(2), color));
         }
         return lines;
     }
